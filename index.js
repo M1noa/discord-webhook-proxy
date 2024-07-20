@@ -1,6 +1,7 @@
 const express = require('express');
 const axios = require('axios');
 const rateLimit = require('express-rate-limit');
+require('dotenv').config(); // Load environment variables
 
 const app = express();
 const port = 3000;
@@ -11,12 +12,25 @@ app.use(express.json());
 const rateLimitMiddleware = rateLimit({
   windowMs: 24 * 60 * 60 * 1000, // 24 hours
   max: 2, // limit each IP to 2 requests per windowMs
-  message: 'Too many requests from this IP, please try again later.'
+  message: 'Too many requests from this IP, please try again later.',
+  keyGenerator: (req) => req.ip // Use IP address as the key for rate limiting
+});
+
+// Middleware to log requests and check rate limiting
+app.use((req, res, next) => {
+  console.log(`Request from IP: ${req.ip}`);
+  console.log(`Request Method: ${req.method}`);
+  
+  // Log if rate limiting is applied
+  if (req.rateLimit) {
+    console.log(`Rate Limit Remaining: ${req.rateLimit.remaining}`);
+    console.log(`Rate Limit Reset Time: ${new Date(req.rateLimit.resetTime).toLocaleString()}`);
+  }
+  
+  next();
 });
 
 app.use(rateLimitMiddleware);
-
-const WEBHOOK_URL = 'https://discord.com/api/webhooks/1264349706557984841/lr5fa1XP4e80Ycf69wO_1p8tlbk-EW428TsIqRUrk9AmwVtP5n0y_J6M-XGIkjCnAfe1';
 
 // Middleware to block DELETE requests
 app.use((req, res, next) => {
