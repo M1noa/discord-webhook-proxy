@@ -10,10 +10,9 @@ app.use(express.json());
 
 // Rate limiting configuration
 const rateLimitMiddleware = rateLimit({
-  windowMs: 24 * 60 * 60 * 1000, // 24 hours
-  max: 2, // limit each IP to 2 requests per windowMs
-  message: 'Too many requests from this IP, please try again later.',
-  keyGenerator: (req) => req.ip // Use IP address as the key for rate limiting
+  windowMs: 30 * 1000, // 30 seconds
+  max: 1, // limit each IP to 1 request per windowMs
+  message: 'Too many requests, please try again later.'
 });
 
 // Middleware to log requests and check rate limiting
