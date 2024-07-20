@@ -5,13 +5,14 @@ require('dotenv').config(); // Load environment variables
 
 const app = express();
 const port = 3000;
+const webhookUrl = process.env.WEBHOOK_URL; // Load the webhook URL from .env
 
 app.use(express.json());
 
 // Rate limiting configuration
 const rateLimitMiddleware = rateLimit({
   windowMs: 45 * 1000, // 45 seconds
-  max: 2, // limit each IP to 2 request per IP, vercel uses a proxy so this is combined for everyone on vercel
+  max: 2, // limit each IP to 2 requests per IP
   message: 'Too many requests, please try again later.'
 });
 
@@ -52,7 +53,7 @@ app.post('*', async (req, res) => {
     // Remove undefined fields
     Object.keys(payload).forEach(key => payload[key] === undefined && delete payload[key]);
 
-    await axios.post(WEBHOOK_URL, payload);
+    await axios.post(webhookUrl, payload);
     res.status(200).send('Webhook sent successfully');
   } catch (error) {
     console.error('Error sending webhook:', error);
