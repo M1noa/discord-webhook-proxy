@@ -5,7 +5,10 @@ require('dotenv').config(); // Load environment variables
 
 const app = express();
 const port = 3000;
-const webhookUrl = process.env.WEBHOOK_URL; // Load the webhook URL from .env
+
+const webhookId = process.env.WEBHOOK_ID;
+const webhookCode = process.env.WEBHOOK_CODE;
+const webhookUrl = `https://discord.com/api/webhooks/${webhookId}/${webhookCode}`;
 
 app.use(express.json());
 
