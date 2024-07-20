@@ -2,10 +2,10 @@
 ## make it so people cant delete ur public discord webhook
 
 
-'''git clone https://github.com/M1noa/discord-webhook-proxy.git
+```git clone https://github.com/M1noa/discord-webhook-proxy.git
 cd discord-webhook-proxy-main
-npm install
+npm install```
 
 edit the .env to have ur webhook url
 
-node index.js
+```node index.js```
