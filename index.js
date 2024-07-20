@@ -10,8 +10,8 @@ app.use(express.json());
 
 // Rate limiting configuration
 const rateLimitMiddleware = rateLimit({
-  windowMs: 30 * 1000, // 30 seconds
-  max: 1, // limit each IP to 1 request per windowMs
+  windowMs: 45 * 1000, // 45 seconds
+  max: 2, // limit each IP to 2 request per IP, vercel uses a proxy so this is combined for everyone on vercel
   message: 'Too many requests, please try again later.'
 });
 
