@@ -1,6 +1,7 @@
 const express = require('express');
 const axios = require('axios');
 const rateLimit = require('express-rate-limit');
+const cors = require('cors');
 require('dotenv').config(); // Load environment variables
 
 const app = express();
@@ -11,6 +12,7 @@ const webhookCode = process.env.WEBHOOK_CODE;
 const webhookUrl = `https://discord.com/api/webhooks/${webhookId}/${webhookCode}`;
 
 app.use(express.json());
+app.use(cors()); // Enable CORS for all routes
 
 // Rate limiting configuration
 const rateLimitMiddleware = rateLimit({
