@@ -7,7 +7,7 @@ click [![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/
 ## Other
 If you have any issues make a detailed issues report or hmu at github@minoa.cat or minoa.cat on discord
 ##
-p.s. to change the rate limit go to the github repo that vercel makes and go into the index.js and edit the stuff under ```const rateLimitMiddleware = rateLimit({```
+to change the rate limit go to the github repo that vercel makes and go into the index.js and edit the stuff under ```const rateLimitMiddleware = rateLimit({```
 ##
 vercel seems to proxy everything so the rate limit is shared, but if you use something other than vercel it might be per IP
 ##
