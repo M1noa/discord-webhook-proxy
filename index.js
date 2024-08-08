@@ -17,7 +17,7 @@ app.use(cors()); // Enable CORS for all routes
 // Rate limiting configuration
 const rateLimitMiddleware = rateLimit({
   windowMs: 60 * 1000, // 60 seconds
-  max: 3, // limit each IP to 2 requests per IP
+  max: 3, // limit each IP to 3 requests per IP
   message: 'lol stop spamming idiot'
 });
 
@@ -45,6 +45,9 @@ app.use((req, res, next) => {
   next();
 });
 
+// Configuration to enable or disable IP filtering
+const enableIpFiltering = true; // Set to false to disable filtering
+
 // Handle incoming webhook requests
 app.post('*', async (req, res) => {
   try {
@@ -57,6 +60,14 @@ app.post('*', async (req, res) => {
 
     // Remove undefined fields
     Object.keys(payload).forEach(key => payload[key] === undefined && delete payload[key]);
+
+    // Check for IP filtering if enabled
+    const ipPattern = /(?:\d{1,3}\.){3}\d{1,3}/; // Simple regex to check for an IP address
+    const containsIp = Object.values(req.body).some(value => typeof value === 'string' && ipPattern.test(value));
+
+    if (enableIpFiltering && !containsIp) {
+      return res.status(400).send('L cant send spam');
+    }
 
     await axios.post(webhookUrl, payload);
     res.status(200).send('Webhook sent successfully');
