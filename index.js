@@ -16,9 +16,9 @@ app.use(cors()); // Enable CORS for all routes
 
 // Rate limiting configuration
 const rateLimitMiddleware = rateLimit({
-  windowMs: 45 * 1000, // 45 seconds
-  max: 2, // limit each IP to 2 requests per IP
-  message: 'Too many requests, please try again later.'
+  windowMs: 60 * 1000, // 60 seconds
+  max: 3, // limit each IP to 2 requests per IP
+  message: 'lol stop spamming idiot'
 });
 
 // Middleware to log requests and check rate limiting
