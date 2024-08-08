@@ -18,7 +18,7 @@ app.use(cors()); // Enable CORS for all routes
 // Rate limiting configuration
 const rateLimitMiddleware = rateLimit({
   windowMs: 60 * 1000, // 60 seconds
-  max: 5, // limit each IP to 3 requests per IP
+  max: 3, // limit each IP to 3 requests per IP
   message: 'lol stop spamming idiot'
 });
 
@@ -41,7 +41,7 @@ app.use(rateLimitMiddleware);
 // Middleware to block DELETE requests
 app.use((req, res, next) => {
   if (req.method === 'DELETE') {
-    return res.status(405).send('Method Not Allowed');
+    return res.status(405).send('you thought');
   }
   next();
 });
