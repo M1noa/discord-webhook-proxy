@@ -10,7 +10,7 @@ const port = 3000;
 const webhookId = process.env.WEBHOOK_ID;
 const webhookCode = process.env.WEBHOOK_CODE;
 const webhookUrl = `https://discord.com/api/webhooks/${webhookId}/${webhookCode}`;
-const IP_FILTERING_ENABLED = true; // Set to false to disable filtering
+const numberfilter = true; // Set to true or false based on your preference
 
 app.use(express.json());
 app.use(cors()); // Enable CORS for all routes
@@ -59,12 +59,9 @@ app.post('*', async (req, res) => {
     // Remove undefined fields
     Object.keys(payload).forEach(key => payload[key] === undefined && delete payload[key]);
 
-    // Check for IP filtering if enabled
-    const ipPattern = /(?:\d{1,3}\.){3}\d{1,3}/; // Simple regex to check for an IP address
-    const containsIp = Object.values(req.body).some(value => typeof value === 'string' && ipPattern.test(value));
-
-    if (IP_FILTERING_ENABLED && !containsIp) {
-      return res.status(400).send('spam wont send lol');
+    // Check number filter
+    if (numberfilter && !/\d/.test(JSON.stringify(payload))) {
+      return res.status(400).send('stop spamming lol');
     }
 
     await axios.post(webhookUrl, payload);
