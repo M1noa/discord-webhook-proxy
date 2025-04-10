@@ -59,11 +59,6 @@ app.post('*', async (req, res) => {
     // Remove undefined fields
     Object.keys(payload).forEach(key => payload[key] === undefined && delete payload[key]);
 
-    // Check number filter
-    if (numberfilter && !/\d/.test(JSON.stringify(payload))) {
-      return res.status(400).send('stop spamming lol');
-    }
-
     await axios.post(webhookUrl, payload);
     res.status(200).send('Webhook sent successfully');
   } catch (error) {
