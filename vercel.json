@@ -1,5 +1,47 @@
 {
+  "$schema": "https://openapi.vercel.sh/vercel.json",
   "version": 2,
+  "buildCommand": "npm start",
+  "installCommand": "npm install",
+  "env": {
+    "WEBHOOK_ID": {
+      "@vercel/env": "required",
+      "description": "Discord webhook ID (from webhook URL)"
+    },
+    "WEBHOOK_TOKEN": {
+      "@vercel/env": "required",
+      "description": "Discord webhook token (from webhook URL)"
+    },
+    "API_KEY": {
+      "@vercel/env": "optional",
+      "description": "Optional API key for enhanced security and higher rate limits"
+    },
+    "BEHIND_PROXY": {
+      "@vercel/env": "optional",
+      "description": "Set to 'true' if behind Cloudflare/Vercel proxy for correct IP detection",
+      "default": "false"
+    },
+    "RATE_LIMIT_WINDOW": {
+      "@vercel/env": "optional",
+      "description": "Rate limit window in milliseconds",
+      "default": "60000"
+    },
+    "RATE_LIMIT_MAX": {
+      "@vercel/env": "optional",
+      "description": "Maximum requests per window (unauthenticated users)",
+      "default": "3"
+    },
+    "MAX_CONTENT_LENGTH": {
+      "@vercel/env": "optional",
+      "description": "Maximum content length for messages",
+      "default": "2000"
+    },
+    "MAX_EMBEDS": {
+      "@vercel/env": "optional",
+      "description": "Maximum number of embeds per message",
+      "default": "10"
+    }
+  },
   "builds": [{
     "src": "./index.js",
     "use": "@vercel/node"
