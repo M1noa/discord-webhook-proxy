@@ -291,22 +291,78 @@ app.get('/health', (req, res) => {
   });
 });
 
-// Mock Discord webhook info endpoint (GET /)
-app.get('/', (req, res) => {
-  // Generate obfuscated but consistent data
-  const obfuscatedData = {
-    application_id: null,
-    avatar: null,
-    channel_id: "9876543210123456789",
-    guild_id: "1234567890987654321", 
-    id: "5647382910384756291",
-    name: "Secure Webhook Proxy",
-    type: 1,
-    token: "AbC123XyZ789MnOpQrStUvWxYz456DeF789GhIjKlMnOpQrStUvWxYzAbC123XyZ",
-    url: `https://discord.com/api/webhooks/5647382910384756291/AbC123XyZ789MnOpQrStUvWxYz456DeF789GhIjKlMnOpQrStUvWxYzAbC123XyZ`
-  };
-  
-  res.status(200).json(obfuscatedData);
+// Discord webhook info endpoint (GET /) - returns real webhook data with scrambled IDs
+app.get('/', async (req, res) => {
+  try {
+    const webhookUrl = `https://discord.com/api/webhooks/${WEBHOOK_ID}/${WEBHOOK_TOKEN}`;
+    
+    const response = await axios.get(webhookUrl, {
+      timeout: 10000,
+      headers: {
+        'User-Agent': 'DiscordWebhookProxy/2.0.0 (by minoa.cat)'
+      }
+    });
+    
+    const webhookData = response.data;
+    
+    // Function to scramble IDs while keeping them valid-looking
+    const scrambleId = (id) => {
+      if (!id) return id;
+      const chars = id.toString().split('');
+      for (let i = chars.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [chars[i], chars[j]] = [chars[j], chars[i]];
+      }
+      return chars.join('');
+    };
+    
+    // Function to scramble token while keeping it valid-looking
+    const scrambleToken = (token) => {
+      if (!token) return token;
+      const chars = token.split('');
+      for (let i = chars.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [chars[i], chars[j]] = [chars[j], chars[i]];
+      }
+      return chars.join('');
+    };
+    
+    const scrambledId = scrambleId(webhookData.id);
+    const scrambledToken = scrambleToken(webhookData.token);
+    
+    // Return webhook data with scrambled sensitive information
+    const obfuscatedData = {
+      application_id: webhookData.application_id, // Keep original
+      avatar: webhookData.avatar, // Keep original
+      channel_id: scrambleId(webhookData.channel_id),
+      guild_id: scrambleId(webhookData.guild_id),
+      id: scrambledId,
+      name: webhookData.name, // Keep original
+      type: webhookData.type, // Keep original
+      token: scrambledToken,
+      url: `https://discord.com/api/webhooks/${scrambledId}/${scrambledToken}`
+    };
+    
+    res.status(200).json(obfuscatedData);
+    
+  } catch (error) {
+    console.error('Error fetching webhook info:', error.message);
+    
+    // Fallback to mock data if webhook fetch fails
+    const fallbackData = {
+      application_id: null,
+      avatar: null,
+      channel_id: "9876543210123456789",
+      guild_id: "1234567890987654321",
+      id: "5647382910384756291",
+      name: "Webhook Proxy (Fallback)",
+      type: 1,
+      token: "AbC123XyZ789MnOpQrStUvWxYz456DeF789GhIjKlMnOpQrStUvWxYzAbC123XyZ",
+      url: "https://discord.com/api/webhooks/5647382910384756291/AbC123XyZ789MnOpQrStUvWxYz456DeF789GhIjKlMnOpQrStUvWxYzAbC123XyZ"
+    };
+    
+    res.status(200).json(fallbackData);
+  }
 });
 
 // main webhook proxy endpoint
