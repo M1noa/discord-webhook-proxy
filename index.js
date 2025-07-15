@@ -13,7 +13,7 @@ const port = process.env.PORT || 3000;
 const WEBHOOK_ID = process.env.WEBHOOK_ID;
 const WEBHOOK_TOKEN = process.env.WEBHOOK_TOKEN;
 const BEHIND_PROXY = process.env.BEHIND_PROXY === 'true';
-const API_KEY = process.env.API_KEY || crypto.randomBytes(32).toString('hex');
+const API_KEY = process.env.API_KEY; // Optional - if not set, no authentication required
 const MAX_CONTENT_LENGTH = parseInt(process.env.MAX_CONTENT_LENGTH) || 2000;
 const MAX_EMBEDS = parseInt(process.env.MAX_EMBEDS) || 10;
 const RATE_LIMIT_WINDOW = parseInt(process.env.RATE_LIMIT_WINDOW) || 60000; // 1 minute
@@ -94,7 +94,8 @@ const createRateLimit = rateLimit({
   keyGenerator: (req) => {
     const ip = getRealIP(req);
     const suffix = req.isAuthenticated ? '_auth' : '_unauth';
-    return crypto.createHash('sha256').update(ip + API_KEY + suffix).digest('hex');
+    const salt = API_KEY || 'no-api-key-fallback';
+    return crypto.createHash('sha256').update(ip + salt + suffix).digest('hex');
   },
   message: (req) => ({
     error: 'Rate limit exceeded',
@@ -117,6 +118,12 @@ app.use((req, res, next) => {
   }
   
   const providedKey = req.headers['x-api-key'] || req.headers['authorization']?.replace('Bearer ', '');
+  
+  // If no API key is configured, all requests are unauthenticated
+  if (!API_KEY) {
+    req.isAuthenticated = false;
+    return next();
+  }
   
   // If API key is provided, validate it
   if (providedKey && providedKey !== API_KEY) {
